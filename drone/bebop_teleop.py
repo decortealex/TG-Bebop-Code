@@ -46,14 +46,28 @@ while not done:
                 done = True  # Flag that we are done so we exit this loop
         executing_command = False
 
+        user_movement = False
         MAX_VEL = 90
         roll = joystick.get_axis(0) * MAX_VEL
         pitch = joystick.get_axis(1) * -MAX_VEL
         yaw = joystick.get_axis(2) * MAX_VEL
         gaz = joystick.get_axis(3) * -MAX_VEL
 
-        bebop.fly_direct(roll=roll, pitch=pitch, yaw=yaw, vertical_movement=gaz, duration=0.5)
+        if roll != 0:
+            user_movement = True
+        if pitch != 0:
+            user_movement = True
+        if yaw != 0:
+            user_movement = True
+        if gaz != 0:
+            user_movement = True
 
+        if user_movement == True:
+            bebop.fly_direct(roll=roll, pitch=pitch, yaw=yaw, vertical_movement=gaz, duration=0.5)
+        else:
+            bebop.fly_direct(0, 0, 0, 0, 0.5)
+
+        
         if joystick.get_button(0) == 1:
             executing_command = True
             bebop.safe_land(timeout=3)
