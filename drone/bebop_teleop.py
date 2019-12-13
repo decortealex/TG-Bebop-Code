@@ -46,15 +46,17 @@ while not done:
                 done = True  # Flag that we are done so we exit this loop
         executing_command = False
 
+        MAX_VEL = 90
+        roll = joystick.get_axis(0) * MAX_VEL
+        pitch = joystick.get_axis(1) * -MAX_VEL
+        yaw = joystick.get_axis(2) * MAX_VEL
+        gaz = joystick.get_axis(3) * -MAX_VEL
+
+        bebop.fly_direct(roll=roll, pitch=pitch, yaw=yaw, vertical_movement=gaz, duration=0.5)
+
         if joystick.get_button(0) == 1:
             executing_command = True
             bebop.safe_land(timeout=3)
-
-        if joystick.get_button(1) == 1:
-            bebop.fly_direct(roll=0, pitch=0, yaw=-100, vertical_movement=0, duration=5)
-
-        if joystick.get_button(2) == 1:
-            bebop.fly_direct(roll=0, pitch=0, yaw=100, vertical_movement=0, duration=5)
 
         if joystick.get_button(3) == 1:
             executing_command = True
@@ -72,17 +74,6 @@ while not done:
         if joystick.get_button(7) == 1:
             print("Button 7 pressed")
 
-        if abs(joystick.get_axis(0)) > 0.05 or abs(joystick.get_axis(1)) > 0.05:
-            executing_command = True
-            print("Left stick %f, %f" % (joystick.get_axis(0),
-                                         joystick.get_axis(1)))
-            bebop.fly_direct(roll=int(1 * joystick.get_axis(0) * 50), pitch=int(-1 * joystick.get_axis(1) * 50), yaw=0, vertical_movement=0, duration=0.05)
-
-
-        if abs(joystick.get_axis(3)) > 0.05 or abs(joystick.get_axis(4)) > 0.05:
-            print("Right stick %f, %f" % (joystick.get_axis(3),
-                                          joystick.get_axis(4)))
-
         # Triggers initialize at 0 and then reset to -1
         if joystick.get_axis(2) != 0:
             left_trigger_initialized = True
@@ -99,12 +90,6 @@ while not done:
         (hat_x, hat_y) = joystick.get_hat(0)
         if hat_x != 0 or hat_y != 0:
             print("Hat %d, %d" % (hat_x, hat_y))
-
-        if hat_y == 1:
-            bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=100, duration=0.1)
-
-        if hat_y == -1:
-            bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=-100, duration=0.1)
 
         bebop.smart_sleep(timeout=0.05)
     except Exception as e:
